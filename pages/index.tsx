@@ -15,7 +15,7 @@ export default function Home() {
   const debouncedLabel = useDebounce<string>(label, 500)
   const debouncedColor = useDebounce<string>(color, 500)
 
-  const siteUrl = process.env.NEXT_PUBLIC_VERCEL_URL || "http://localhost:3000";
+  const siteUrl = process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}` : "http://localhost:3000";
 
   const queryStringParams = useMemo(() => {
     const params = new URLSearchParams();
