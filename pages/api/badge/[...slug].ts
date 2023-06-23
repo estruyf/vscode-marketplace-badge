@@ -8,7 +8,14 @@ export default async function handler(
   res: NextApiResponse<string>
 ) {
   // http://localhost:3000/api/extension?extId=eliostruyf.vscode-front-matter
-  const { extId, type, label } = req.query;
+  const { label, color, slug, style } = req.query;
+
+  if (!slug || slug.length < 2) {
+    return res.status(400).send("Please provide the right badge path.");
+  }
+
+  const type = slug[0];
+  const extId = slug[1];
 
   if (!extId) {
     return res.status(400).send("Please provide an extension id.");
@@ -81,6 +88,11 @@ export default async function handler(
   let badge = null;
   const badgeType = type || "version";
 
+  const options: any = {
+    style: (style as string) || "flat",
+    color: (color as string) || "green",
+  };
+
   if (badgeType === "rating") {
     const ratings = extension.statistics.find(
       (s) => s.statisticName === "averagerating"
@@ -92,13 +104,13 @@ export default async function handler(
 
     if (ratings) {
       badge = makeBadge({
+        ...options,
         label: (label as string) || "rating",
         message: `${ratings.value.toString()}${
           ratingsCount && ratingsCount.value > 1
             ? ` (${ratingsCount.value.toString()} ratings)`
             : ""
         }`,
-        color: "green",
       });
     }
   } else if (badgeType === "installs") {
@@ -108,16 +120,16 @@ export default async function handler(
 
     if (installs) {
       badge = makeBadge({
+        ...options,
         label: (label as string) || "installs",
         message: installs.value.toString(),
-        color: "green",
       });
     }
   } else if (badgeType === "version") {
     badge = makeBadge({
+      ...options,
       label: (label as string) || "version",
       message: extension.versions[0].version,
-      color: "green",
     });
   }
 
