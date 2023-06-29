@@ -8,7 +8,7 @@ export default async function handler(
   res: NextApiResponse<string>
 ) {
   // http://localhost:3000/api/extension?extId=eliostruyf.vscode-front-matter
-  const { label, color, slug, style } = req.query;
+  const { label, color, labelColor, slug, style } = req.query;
 
   if (!slug || slug.length < 2) {
     return res.status(400).send("Please provide the right badge path.");
@@ -92,6 +92,10 @@ export default async function handler(
     style: (style as string) || "flat",
     color: (color as string) || "green",
   };
+
+  if (labelColor) {
+    options.labelColor = labelColor as string;
+  }
 
   if (badgeType === "rating") {
     const ratings = extension.statistics.find(

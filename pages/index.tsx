@@ -10,10 +10,12 @@ export default function Home() {
   const [extId, setExtId] = useState('');
   const [label, setLabel] = useState('');
   const [color, setColor] = useState('');
+  const [labelColor, setLabelColor] = useState('');
   const [style, setStyle] = useState('flat');
   const debouncedExtId = useDebounce<string>(extId, 500)
   const debouncedLabel = useDebounce<string>(label, 500)
   const debouncedColor = useDebounce<string>(color, 500)
+  const debouncedLabelColor = useDebounce<string>(labelColor, 500)
 
   const siteUrl = process.env.NEXT_PUBLIC_WEBSITE_URL ? `https://${process.env.NEXT_PUBLIC_WEBSITE_URL}` : "http://localhost:3000";
 
@@ -28,12 +30,16 @@ export default function Home() {
       params.append('color', debouncedColor);
     }
 
+    if (debouncedLabelColor) {
+      params.append('labelColor', debouncedLabelColor);
+    }
+
     if (style && style !== 'flat') {
       params.append('style', style);
     }
 
     return params.toString();
-  }, [debouncedLabel, debouncedColor, style]);
+  }, [debouncedLabel, debouncedColor, debouncedLabelColor, style]);
 
   const versionUrl = useMemo(() => {
     return `${siteUrl}/api/badge/version/${debouncedExtId || defaultValue}${queryStringParams ? `?${queryStringParams}` : ``}`;
@@ -52,8 +58,7 @@ export default function Home() {
       className={`h-screen w-full space-y-12 flex flex-col items-center justify-center p-24 ${inter.className}`}
     >
       <div className="space-y-2">
-        <p className='text-base text-center text-gray-300'>🚧 Still in development 🚧</p>
-        <h1 className='text-4xl'>Visual Studio Code Marketplace Badge Service</h1>
+        <h1 className='text-4xl'>Visual Studio Code Marketplace - Extension Badge Service</h1>
       </div>
 
       <div className='flex space-x-4'>
@@ -109,13 +114,26 @@ export default function Home() {
             className='w-full mt-2 p-2 rounded-md bg-gray-700 text-gray-300 outline-none focus:outline-gray-400 outline-offset-0'
             onChange={(e) => setColor(e?.currentTarget?.value?.trim() || "")} />
         </div>
+
+        <div className='w-full'>
+          <label htmlFor="labelColor" className='block text-base text-gray-300'>Label color</label>
+          <input
+            type="text"
+            placeholder='Enter your label color (optional / hex)'
+            name="labelColor"
+            className='w-full mt-2 p-2 rounded-md bg-gray-700 text-gray-300 outline-none focus:outline-gray-400 outline-offset-0'
+            onChange={(e) => setLabelColor(e?.currentTarget?.value?.trim() || "")} />
+        </div>
       </div>
 
       <hr className='mx-auto max-w-xl w-full opacity-20' />
 
       <div className='mx-auto max-w-2xl w-full space-y-4'>
         <div>
-          <label htmlFor="version" className='block text-base text-gray-300'>Version</label>
+          <label htmlFor="version" className='flex space-x-2  text-base text-gray-300'>
+            <span>Version</span>
+            <img src={versionUrl} alt='Version badge' className='h-6' />
+          </label>
           <textarea
             name="version"
             className='w-full mt-2 p-2 rounded-md bg-gray-700 text-gray-300 outline-none focus:outline-gray-400 outline-offset-0'
@@ -125,7 +143,10 @@ export default function Home() {
         </div>
 
         <div>
-          <label htmlFor="rating" className='block text-base text-gray-300'>Rating</label>
+          <label htmlFor="rating" className='flex space-x-2  text-base text-gray-300'>
+            <span>Rating</span>
+            <img src={ratingUrl} alt='Rating badge' className='h-6' />
+          </label>
           <textarea
             name="rating"
             className='w-full mt-2 p-2 rounded-md bg-gray-700 text-gray-300 outline-none focus:outline-gray-400 outline-offset-0'
@@ -135,7 +156,10 @@ export default function Home() {
         </div>
 
         <div>
-          <label htmlFor="installs" className='block text-base text-gray-300'>Installs</label>
+          <label htmlFor="installs" className='flex space-x-2 text-base text-gray-300'>
+            <span>Installs</span>
+            <img src={installsUrl} alt='Installation badge' className='h-6' />
+          </label>
           <textarea
             name="installs"
             className='w-full mt-2 p-2 rounded-md bg-gray-700 text-gray-300 outline-none focus:outline-gray-400 outline-offset-0'
